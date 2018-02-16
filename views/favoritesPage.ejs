@@ -1,0 +1,222 @@
+<%include header%>
+
+    <body>
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#home" role="tab">Mettre en ligne une vidéo</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#profile" role="tab">Mes films préférés</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/users-home">Menu</a>
+            </li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+
+            <div class="tab-pane tabAddFilms" id="home" role="tabpanel">
+
+                <form class="ui form" action="/uploadfilmOK" method="POST" encType="multipart/form-data">
+                    <div class="field userInf">
+
+                        <div class="input-group">
+                            <span class="input-group-addon" id="sizing-addon2">
+                                <i class="fas fa-film"></i>
+                            </span>
+                            <input type="text" name="namefilm" placeholder="Nom du film" class="form-control" aria-describedby="sizing-addon2">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <span class="input-group-addon" id="sizing-addon2">
+                            <i class="fa fa-archive" aria-hidden="true"></i>
+                        </span>
+                        <select name="genrefilms" class="form-control">
+                            <option value="Action et Aventure">Action et Aventure</option>
+                            <option value="Animation">Animation</option>
+                            <option value="Codemedie">Codemedie</option>
+                            <option vlaue="Science-fiction et fantastique">Science-fiction et fantastique</option>
+                            <option value="Policier">Policier</option>
+                            <option value="Musique">Musique</option>
+                            <option value="Humour">Humour</option>
+                            <option value="Horreur">Horreur</option>
+                            <option value="Sport">Sport</option>
+                            <option vlaue="Enigmes">Enigmes</option>
+                            <option value="Drame">Drame</option>
+                            <option value="Documentaire">Documentaire</option>
+                            <option value="Télé réalités et Jeux">Télé réalités et Jeux</option>
+                            <option value="Classique">Classique</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <span class="input-group-addon" id="sizing-addon2">
+                            <i class="fa fa-calendar" aria-hidden="true"></i>
+                        </span>
+                        <select name="yearfilm" class="form-control">
+                            <option value="2017">2017</option>
+                            <option value="2016">2016</option>
+                            <option value="2015">2015</option>
+                            <option value="2014">2014</option>
+                            <option value="2013">2013</option>
+                            <option value="2012">2012</option>
+                            <option value="2011">2011</option>
+                            <option value="2010">2010</option>
+                            <option value="2009">2009</option>
+                            <option value="2008">2008</option>
+                            <option value="2007">2007</option>
+                            <option value="2006">2006</option>
+                            <option value="2005">2005</option>
+                            <option value="2004">2004</option>
+                            <option value="2003">2003</option>
+                            <option value="2002">2002</option>
+                            <option value="2001">2001</option>
+                            <option value="2000">2000</option>
+                            <option value="1999">1999</option>
+                            <option value="1998">1998</option>
+                            <option value="1997">1997</option>
+                            <option value="1996">1996</option>
+                        </select>
+                    </div>
+
+
+
+                    <div class="input-group">
+                        <span class="input-group-addon" id="sizing-addon2">
+                            <i class="far fa-clock"></i>
+                        </span>
+                        <input type="number" name="hourfilm" placeholder="durée / minutes" class="form-control">
+                    </div>
+
+                    <div class="input-group">
+                        <span class="input-group-addon" id="sizing-addon2">
+                            <i class="far fa-clock"></i>
+                        </span>
+                        <textarea class="form-control" name="biographyfilm" placeholder="synopsis du film" rows="2" id="comment"></textarea>
+                    </div>
+
+                    <div class="input-group">
+                        <span class="input-group-addon" id="sizing-addon2">
+                            <i class="far fa-clock"></i>
+                        </span>
+                        <input type="file" name="fileimage" placeholder="choisi une image" class="form-control" required>
+                    </div>
+
+                    <div class="input-group">
+                        <span class="input-group-addon" id="sizing-addon2">
+                            <i class="far fa-clock"></i>
+                        </span>
+                        <input type="file" name="filevideo" class="form-control" required>
+                    </div>
+                    <div class="subB">
+                        <button class="btn btn-outline-primary " type="submit">Ajouter</button>
+                    </div>
+                </form>
+
+            </div>
+
+
+            <div class="tab-pane active" id="profile" role="tabpanel">
+
+                <div class="container-fluid">
+                    <div class="row">
+                        <%resultat.forEach(function(films){ %>
+
+                            <%resultat2.forEach(function(filmCount){%>
+
+                                <!-- IF FILMS == 0 -->
+                                <%if(filmCount.favorits == 0) { %>
+
+                                    <div class="col-md-12 nofilmsFav">
+
+                                        <h1 style="color:black">
+                                            Il n y a pas de film ici
+                                        </h1>
+
+                                    </div>
+
+                                    <%}%>
+
+
+                                        <!-- IF FILMS == 0 -->
+
+
+
+
+                                        <!-- IF FILMS > 0 -->
+
+                                        <%if(filmCount.favorits > 0) { %>
+
+                                            <div class="col-md-3 films-alls name">
+                                                <div class="movie-card">
+                                                    <div class="movie-header manOfSteel">
+                                                        <div class="header-icon-container">
+                                                            <img src="../public/imgUpload/upl_<%=films.imagefilm%>" alt="filmsimage">
+                                                        </div>
+                                                    </div>
+                                                    <!--movie-header-->
+                                                    <div class="movie-content">
+                                                        <div class="movie-content-header">
+                                                            <a href="#" style="text-decoration:none;">
+                                                                <h3 class="movie-title">
+                                                                    <%=films.films%>
+                                                                </h3>
+                                                            </a>
+
+                                                        </div>
+                                                    </div>
+                                                    <!--movie-content-->
+                                                </div>
+                                                <!--movie-card-->
+                                                <div class="icons-like-mess">
+                                                    <div class="sub-icons">
+                                                        <button class="btn btn-default">
+                                                            <a href="/detailsFilm/<%=films.id%>" title="infos du film">
+                                                                <i class="fas fa-info-circle fa-1x"></i>
+                                                            </a>
+
+                                                        </button>
+                                                        <form action="/deletFilmFav/<%=films.id%>" method="POST">
+                                                            <input type="hidden" name="_method" value="delete">
+                                                            <button type="submit" title="supprimer le film">
+                                                                <i class="fas fa-trash-alt fa-1x"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                    <div>
+                                                        <span>
+                                                            <i class="far fa-calendar-alt"></i>
+                                                            <%=films.years%> &
+                                                                <i class="far fa-clock"></i>
+                                                                <%=films.hourfilm%> min
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <%}%>
+
+                                                <!-- IF FILMS > 0 -->
+
+                                                <%})%>
+
+
+                                                    <% }) %>
+                    </div>
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+
+
+
+
+    </body>
+    <%include footer%>

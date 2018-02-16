@@ -1,0 +1,186 @@
+<%include header%>
+
+    <body class="bodyProfil">
+
+        <div class="myModalOpen">
+            <div class="validationCard">
+                <h3 style="color:#3F3F3F">Etes vous sur de vouloir supprimer ce compte ?</h3>
+                <p style="font-style:italic;color:#C9302C">Toutes vos données personnels, y compris ce compte seront supprimés à tout jamais.!</p>
+                <form action="/deletme" method="POST">
+                    <input type="hidden" name="_method" value="delete" />
+                    <button type="submit" class="btn btn-danger">Oui</button>
+                </form>
+                <button class="btn btn-primary cancelDel">non</button>
+            </div>
+        </div>
+
+        <div class="container">
+
+            <div class="row">
+
+                <div class="col-md-12 tabsHead">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="tab" href="#Profile" role="tab">Profile</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#Sécurité" role="tab">Sécurité</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#Paramètre" role="tab">Paramètre</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/users-home">Menu</a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <%resultat.forEach(function(user){%>
+
+                            <div class="tab-pane active" id="Profile" role="tabpanel">
+                                <div class="cardest">
+                                    <div class="card-header" style="font-weight:bolder">
+                                        <i class="fas fa-camera"></i> Photo de profil
+                                    </div>
+                                    <div class="card-block">
+                                        <div class="realValidateAvatar" title="importez une photo">
+                                            <form action="/modifyAvatar" method="POST" style="display:flex;" encType="multipart/form-data">
+                                                <!-- <input type="hidden" name="_method" value="put" /> -->
+                                                <div class="falseImg">
+                                                    <img src="./public/images/upload/dieudonne.jpg" alt="avatar">
+                                                </div>
+                                                <label class="import">
+                                                    Importer
+                                                    <input class="btn btn-primary validaAvatar" type="file" name="avatarImgFile">
+                                                </label>
+                                                <button type="submit" class="btn btn-success valideUpdate" disabled>Sauvegarder</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="cardest">
+                                    <div class="card-header" style="font-weight:bolder">
+                                        <i class="fas fa-user"></i> Nom d'utilisateur
+                                    </div>
+                                    <div class="card-block">
+                                        <%=user.lastname%>
+                                            <span style="text-transform:lowercase">
+                                                <%=user.firstname%>
+                                            </span>
+                                    </div>
+                                </div>
+                                <div class="cardest">
+                                    <div class="card-header" style="font-weight:bolder">
+                                        <i class="far fa-envelope" style="color:black"></i> Email
+                                    </div>
+                                    <div class="card-block">
+                                        <%=user.email%>
+                                    </div>
+                                </div>
+                                <div class="cardest">
+                                    <form action="/modifyInfos" method="POST">
+                                        <div class="card-header" style="font-weight:bolder">
+                                            <i class="far fa-comment"></i> Quelques chose sur vous
+                                        </div>
+                                        <div class="card-block">
+                                            <div class="form-group">
+                                                <textarea type="text" class="form-control" id="textChampsBio" name="biography"><%=user.biography%></textarea>
+                                            </div>
+                                            <button type="submit" class="btn btn-default saveBio" disabled>Mettre à jour</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="Sécurité" role="tabpanel">
+                                <div class="card-header" style="font-weight:bolder">
+                                    <i class="fas fa-lock"></i> Changer Mot de passe
+                                </div>
+                                <div class="card-block">
+
+                                    <form action="/modifyPass" method="POST">
+                                        <input type="hidden" name="_method" value="put" />
+                                        <div class="form-group">
+                                            <input type="password" class="form-control" name="modifyPasswordUser" style="margin-bottom:10px" id="txtReNewPassword" placeholder="Nouveau mot de passe">
+                                            <input type="password" class="form-control" placeholder="Retappez nouveau mot de passe" id="txtNewPassword" placeholder="Retapez le nouveau mot de passe ">
+                                        </div>
+                                        <button type="submit" class="btn btn-default valideChangePass" disabled>Mettre à jour</button>
+                                    </form>
+
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="Paramètre" role="tabpanel">
+                                <div class="card-header" style="font-weight:bolder">
+                                    <i class="fas fa-lock"></i> Supprimer ce compte ?
+                                </div>
+                                <div class="card-block">
+                                    <div class="form-group" style="color:red; font-style:italic">
+                                        Toutes les informations de votre compte, films préférées, liens personnels seront effacés.
+                                    </div>
+                                    <button id="myModalOpen" class="btn btn-outline-danger">Supprimer</button>
+                                </div>
+                            </div>
+
+                            <%})%>
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+
+        </div>
+
+
+        <script>    
+            $('#myModalOpen').click(function () {
+                $('.myModalOpen').addClass('modalCustom');
+            })
+            $('.cancelDel').click(function () {
+                $('.myModalOpen').removeClass('modalCustom');
+            })
+
+            $(document).ready(function () {
+                $("#txtNewPassword").keyup(validate);
+            });
+
+
+            function validate() {
+                var password1 = $("#txtNewPassword").val();
+                var password2 = $("#txtReNewPassword").val();
+
+
+
+                if (password1 == password2) {
+                    $("#validate-status").text("valid");
+                    $('.valideChangePass').prop('disabled', false).css({ "backgroundColor": "#2488EC" });;
+                    $('#check1,#check2').fadeIn();
+                    $('#unchecked').fadeOut();
+                }
+                else {
+                    $("#validate-status").text("invalid");
+                    $('.valideChangePass').prop('disabled', true).css({ "backgroundColor": "#DDDDDD  " });
+                    $('#check1,#check2').fadeOut();
+                    $('#unchecked').fadeIn();
+                }
+            }
+
+            $('.validaAvatar').change(
+                function () {
+                    if ($(this).val()) {
+                        $('.valideUpdate').attr('disabled', false);
+                        $('.valideUpdate').addClass('effectUpdate');
+                    }
+                }
+            );
+
+
+            $('#textChampsBio').keyup(function () {
+                $('.saveBio').attr('disabled', false);
+            })
+        </script>
+
+
+    </body>
+    <%include footer%>

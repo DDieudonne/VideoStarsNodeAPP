@@ -1,0 +1,90 @@
+<%include header%>
+
+  <body class="bodyHomepageUser">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12 head-search">
+          <div class="col-md-6 search-title">
+            <div class="input-group input-group-sm">
+             
+            </div>
+          </div>
+          <div class="col-md-6 names">
+
+            <%infosuser.forEach(function(user){%>
+              <span class="name-user-icon">
+                <span>
+                  <i class="fas fa-home"></i>
+                  <a style="text-decoration:none;margin-right:5px;color:rgb(226, 76, 74)" href="/users-home">Menu</a>
+                </span>
+                <span>
+                  <i class="fas fa-user"></i>
+                </span>
+                <%=user.lastname%>
+                  <span style="text-transform:lowercase">
+                    <%=user.firstname%>
+                  </span>
+              </span>
+              <a class="logout-user" href="/logout">
+                <i class="fas fa-sign-out-alt"></i> Se déconnecté
+              </a>
+              <%})%>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="container-fluid">
+      <div class="row">
+        <%resultat.forEach(function(films){ %>
+          <div class="col-md-3 films-alls name">
+            <div class="movie-card">
+              <div class="movie-header manOfSteel">
+                <div class="header-icon-container">
+                  <img src="../public/imgUpload/upl_<%=films.imagefilm%>" alt="filmsimage">
+                </div>
+              </div>
+              <!--movie-header-->
+              <div class="movie-content">
+                <div class="movie-content-header">
+                  <a href="#" style="text-decoration:none;">
+                    <h3 class="movie-title">
+                      <%=films.films%>
+                    </h3>
+                  </a>
+
+                </div>
+              </div>
+              <!--movie-content-->
+            </div>
+            <!--movie-card-->
+            <div class="icons-like-mess">
+              <div class="sub-icons">
+                <button class="btn btn-default">
+                  <a href="/detailsFilm/<%=films.id%>">
+                    <i class="fas fa-info-circle fa-2x"></i>
+                  </a>
+                </button>
+              </div>
+              <div>
+                <span>
+                  <i class="far fa-calendar-alt"></i>
+                  <%=films.years%> &
+                    <i class="far fa-clock"></i>
+                    <%=films.hourfilm%> min
+                </span>
+              </div>
+            </div>
+          </div>
+          <% }) %>
+      </div>
+    </div>
+
+    <script>
+      var monkeyList = new List('test-list', {
+        valueNames: ['name']
+      });
+    </script>
+  </body>
+  <%include footer%>

@@ -1,0 +1,105 @@
+define("artdeco-hoverables/components/artdeco-hoverable-trigger",["exports","ember","artdeco-hoverables/templates/components/artdeco-hoverable-trigger"],function(e,t,o){var n=42,i=function(){return"artdeco-gen-"+n++},r={13:"Enter",27:"Escape",32:" "},a=function(e){return e.key||r[e.which]||null},s=function(e){return e.find("a, button, :input, [tabindex]")}
+e.default=t.default.Component.extend({hoverableService:t.default.inject.service("artdeco-hoverable"),layout:o.default,tagName:"artdeco-hoverable-trigger",placement:"top",on:"hover",ariaExpanded:!1,contentId:t.default.computed("for",(function(){return this.get("for")||i()})),ariaId:t.default.computed("contentId",(function(){return"artdeco-hoverable-"+this.get("contentId")})),hoverableId:t.default.computed("contentId",(function(){return"artdeco-hoverable-"+this.get("contentId")})),hoverableHasDismissButton:t.default.computed.equal("on","init"),didInsertElement:function(){var e=this.get("on")
+if("click"===e){var o=this.$("[aria-controls][aria-expanded]")
+t.default.assert("[artdeco-hoverable-trigger] The trigger element must have aria-controls and aria-expanded attributes",o.length)
+t.default.assert("[artdeco-hoverable-trigger] The trigger element must have an aria-controls attribute matching the hoverable's id",o.attr("aria-controls")===this.get("ariaId"))}else if("hover"===e){var o=this.$("[aria-describedby]")
+t.default.assert("[artdeco-hoverable-trigger] The trigger element must have an aria-describedby attribute",o.length)
+t.default.assert("[artdeco-hoverable-trigger] The trigger element's aria-describedby attribute must match the hoverable's id",o.attr("aria-describedby")===this.get("ariaId"))}else"init"===e&&t.default.run.scheduleOnce("afterRender",this,"_showHoverable")},mouseEnter:function(){var e=this
+t.default.run.debounce(this,(function(){"hover"===e.get("on")&&e._showHoverable()}),50)},mouseLeave:function(){var e=this
+t.default.run.debounce(this,(function(){"hover"===e.get("on")&&e._hideHoverable()}),50)},click:function(e){if("click"===this.get("on")){e.preventDefault()
+this.get("onClick")&&this.get("onClick")(e)
+this._showHoverable()}},focusIn:function(){"click"!==this.get("on")&&this._showHoverable()},focusOut:function(e){this.element.contains(e.relatedTarget)||t.default.$("#artdeco-hoverable-outlet").get(0).contains(e.relatedTarget)||this._hideHoverable()},keyDown:function(e){switch(a(e)){case"Enter":case" ":"click"===this.get("on")&&this._showHoverable()
+break
+case"Escape":this._hideHoverable()}},_showHoverable:function(){var e=this
+this.get("hoverableService").open(this.get("contentId"),this.get("placement"),this.element)
+var o=t.default.$("#"+this.get("hoverableId"))
+this._setAria(o)
+"hover"===this.get("on")&&t.default.assert('For a11y, hoverables triggered with "hover" cannot contain interactive content (i.e. they cannot contain focusable elements)',0===s(o).length)
+this.get("ariaControls")&&t.default.run.later((function(){t.default.$("#artdeco-hoverable-"+e.get("contentId")).focus()
+t.default.$("body").on("keydown.artdeco",(function(t){return e._handleHoverableKeydown(t)}))}))},_hideHoverable:function(){this.get("hoverableService").close()
+this.set("ariaExpanded","false")
+t.default.$("body").off("keydown.artdeco")},_setAria:function(e){if(e.length){var t=this.get("ariaId")
+if(!!s(e).length){this.set("ariaControls",t)
+this.set("ariaExpanded","true")}else this.set("describedBy","#artdeco-hoverable-"+t)}},_handleHoverableKeydown:function(e){var t=document.getElementById(this.get("hoverableId"))
+if(t&&t.contains(e.target)){if("Escape"===a(e)){this._hideHoverable()
+this.element.focus()}}}})})
+define("artdeco-hoverables/components/artdeco-hovercard-content",["exports","ember","artdeco-hoverables/templates/components/artdeco-hovercard-content"],function(e,t,o){e.default=t.default.Component.extend({hoverableService:t.default.inject.service("artdeco-hoverable"),layout:o.default,isVisible:!1,hasDismissButton:!1,init:function(){this._super(arguments)
+t.default.assert("[artdeco-hovercard-content] no id was provided. If you don't have an id, you must nest the artdeco-hovercard-content inside of an artdeco-hoverable-trigger component",void 0!==this.get("id"))
+this.get("hoverableService").register(this.get("id"),this)},cardDidShow:function(){this.sendAction("onShow")},cardDidHide:function(){this.sendAction("onHide")},actions:{onDismissButtonPressed:function(){this.get("hoverableService").close()}}})})
+define("artdeco-hoverables/components/artdeco-tooltip-content",["exports","ember","artdeco-hoverables/templates/components/artdeco-tooltip-content"],function(e,t,o){e.default=t.default.Component.extend({hoverableService:t.default.inject.service("artdeco-hoverable"),layout:o.default,isVisible:!1,isTooltip:!0,hasDismissButton:!1,theme:"light",attributeBindings:["theme"],init:function(){var e=["light","inverse","accent"]
+this._super(arguments)
+t.default.assert("[artdeco-tooltip-content] no id was provided. If you don't have an id, you must nest the artdeco-tooltip-content inside of an artdeco-hoverable-trigger component",void 0!==this.get("id"))
+t.default.assert("[artdeco-tooltip-content] an invalid theme was provided. Please consult the documentation for valid themes.",e.indexOf(this.get("theme"))>-1)
+this.get("hoverableService").register(this.get("id"),this)},cardDidShow:function(){this.sendAction("onShow")},cardDidHide:function(){this.sendAction("onHide")},actions:{onDismissButtonPressed:function(){this.get("hoverableService").close()}}})})
+define("artdeco-hoverables/services/artdeco-hoverable",["exports","ember"],function(e,t){var o={top:"bottom",bottom:"top",right:"left",left:"right"},n=function e(n,r,a){var s=arguments.length<=3||void 0===arguments[3]?0:arguments[3],l=t.default.$(a).offset(),d=l.top,c=l.left,h=a.offsetWidth,u=a.offsetHeight,m="left"===r||"right"===r?Math.max(d-(n.outerHeight()/2-u/2),0):"bottom"===r?d+a.offsetHeight+15:d-n.outerHeight()-15,f="top"===r||"bottom"===r?Math.max(c-n.outerWidth()/2+h/2,0):"left"===r?c-n.outerWidth()-15:c+a.offsetWidth+15
+n.css({display:"block",top:m+"px",left:f+"px"})
+n.attr("placement",r)
+!i(n[0])&&s<2&&e(n,o[r],a,++s)},i=function(e){var t=e.getBoundingClientRect(),o=document.documentElement,n=o.clientWidth,i=o.clientHeight
+return t.top>=0&&t.bottom<i&&t.left>=0&&t.right<n}
+e.default=t.default.Service.extend({_openCard:null,_registry:{},register:function(e,t){this._registry[e]=t},open:function(e,o,i){var r=this,a=this._registry[e]
+if(a){this.close()
+this._openCard=a
+n(t.default.$("#artdeco-hoverable-"+e),o,i)
+this._openCard.get("isDestroying")||this._openCard.get("isDestroyed")||this._openCard.set("isVisible",!0)
+this._openCard.cardDidShow()
+t.default.run.later((function(){return t.default.$("body").on("mouseup.artdeco-hoverable",(function(e){return r._bodyWasClicked(e)}))}))}else t.default.Logger.error('No hoverable with id "'+e+'" has been registered.')},close:function(){if(this._openCard){this._openCard.get("isDestroying")||this._openCard.get("isDestroyed")||this._openCard.set("isVisible",!1)
+this._openCard.cardDidHide()
+this._openCard=null
+this.removeEventListeners()}},_bodyWasClicked:function(e){document.getElementById("artdeco-hoverable-outlet").contains(e.target)||this.close()},removeEventListeners:function(){t.default.$("body").off("mouseup.artdeco-hoverable")},willDestroy:function(){this.removeEventListeners()}})})
+define("artdeco-hoverables/templates/components/artdeco-hoverable-trigger",["exports"],function(e){"use strict"
+e.__esModule=!0
+e.default=Ember.HTMLBars.template({id:"BaS7Edc9",block:'{"statements":[[18,"default",[[33,["hash"],null,[["artdeco-tooltip-content","artdeco-hovercard-content","ariaId","contentId","ariaExpanded"],[[33,["component"],["artdeco-tooltip-content"],[["isContentVisible","id","hasDismissButton","onShow","onHide"],[[28,["isContentVisible"]],[28,["contentId"]],[28,["hoverableHasDismissButton"]],[28,["onShow"]],[28,["onHide"]]]]],[33,["component"],["artdeco-hovercard-content"],[["isContentVisible","placement","id","hasDismissButton","onShow","onHide"],[[28,["isContentVisible"]],[28,["placement"]],[28,["contentId"]],[28,["hoverableHasDismissButton"]],[28,["onShow"]],[28,["onHide"]]]]],[28,["ariaId"]],[28,["contentId"]],[28,["ariaExpanded"]]]]]]]],"locals":[],"named":[],"yields":["default"],"hasPartials":false}',meta:{moduleName:"artdeco-hoverables/templates/components/artdeco-hoverable-trigger.hbs"}})})
+define("artdeco-hoverables/templates/components/artdeco-hovercard-content",["exports"],function(e){"use strict"
+e.__esModule=!0
+e.default=Ember.HTMLBars.template({id:"q4pNEGLl",block:'{"statements":[[6,["ember-wormhole"],null,[["to"],["artdeco-hoverable-outlet"]],{"statements":[[0,"  "],[9,"artdeco-hovercard-content",{"attrs":[[16,"id",[34,["artdeco-hoverable-",[26,["id"]]]]],[16,"class",[34,[[26,["contentClass"]]," ",[33,["if"],[[28,["hasDismissButton"]],"artdeco-hovercard-content--with-dismiss"],null]]]],[15,"tabindex","-1"],[15,"role","tooltip"],[16,"blur",[26,["onFocusOut"]],null],[16,"placement",[26,["placement"]],null],[16,"visible",[26,["isVisible"]],null],[16,"aria-hidden",[33,["if"],[[28,["isVisible"]],"false","true"],null],null]],"args":[[],[]],"locals":[],"statements":[[0,"\\n    "],[11,"div",[]],[15,"class","artdeco-hovercard-content-container"],[13],[0,"\\n      "],[18,"default"],[0,"\\n    "],[14],[0,"\\n"],[6,["if"],[[28,["hasDismissButton"]]],null,{"statements":[[0,"      "],[11,"div",[]],[15,"class","artdeco-hovercard-content-dismiss-button-container"],[5,["action"],[[28,[null]],"onDismissButtonPressed"]],[13],[0,"\\n        "],[11,"span",[]],[15,"class","a11y-text"],[13],[0,"Dismiss"],[14],[0,"\\n        "],[1,[33,["li-icon"],null,[["type","size"],["cancel-icon","small"]]],false],[0,"\\n      "],[14],[0,"\\n"]],"locals":[]},null],[0,"  "]]}],[0,"\\n"]],"locals":[]},null]],"locals":[],"named":[],"yields":["default"],"hasPartials":false}',meta:{moduleName:"artdeco-hoverables/templates/components/artdeco-hovercard-content.hbs"}})})
+define("artdeco-hoverables/templates/components/artdeco-tooltip-content",["exports"],function(e){"use strict"
+e.__esModule=!0
+e.default=Ember.HTMLBars.template({id:"4GZv11kO",block:'{"statements":[[6,["ember-wormhole"],null,[["to"],["artdeco-hoverable-outlet"]],{"statements":[[0,"  "],[9,"artdeco-tooltip-content",{"attrs":[[16,"id",[34,["artdeco-hoverable-",[26,["id"]]]]],[16,"class",[34,[[26,["contentClass"]]," ",[33,["if"],[[28,["hasDismissButton"]],"artdeco-tooltip-content--with-dismiss"],null]]]],[15,"tabindex","-1"],[15,"role","tooltip"],[16,"blur",[26,["onFocusOut"]],null],[16,"visible",[26,["isVisible"]],null],[16,"aria-hidden",[33,["if"],[[28,["isVisible"]],"false","true"],null],null],[16,"theme",[26,["theme"]],null]],"args":[[],[]],"locals":[],"statements":[[0,"\\n    "],[11,"div",[]],[15,"class","artdeco-tooltip-content-container"],[13],[0,"\\n      "],[18,"default"],[0,"\\n    "],[14],[0,"\\n"],[6,["if"],[[28,["hasDismissButton"]]],null,{"statements":[[0,"      "],[11,"div",[]],[15,"class","artdeco-tooltip-content-dismiss-button-container"],[5,["action"],[[28,[null]],"onDismissButtonPressed"]],[13],[0,"\\n        "],[11,"span",[]],[15,"class","a11y-text"],[13],[0,"Dismiss"],[14],[0,"\\n        "],[1,[33,["li-icon"],null,[["type","size"],["cancel-icon","small"]]],false],[0,"\\n      "],[14],[0,"\\n"]],"locals":[]},null],[0,"  "]]}],[0,"\\n"]],"locals":[]},null]],"locals":[],"named":[],"yields":["default"],"hasPartials":false}',meta:{moduleName:"artdeco-hoverables/templates/components/artdeco-tooltip-content.hbs"}})})
+define("ember-wormhole/components/ember-wormhole",["exports","ember-wormhole/templates/components/ember-wormhole","ember-wormhole/utils/dom"],(function(e,t,o){"use strict"
+Object.defineProperty(e,"__esModule",{value:!0})
+var n=Ember.Component,i=Ember.computed,r=Ember.observer,a=Ember.run
+e.default=n.extend({layout:t.default,to:i.alias("destinationElementId"),destinationElementId:null,destinationElement:i("destinationElementId","renderInPlace",(function(){if(this.get("renderInPlace"))return this._element
+var e=this.get("destinationElementId")
+return e?(0,o.findElementById)(this._dom,e):null})),renderInPlace:!1,init:function(){this._super.apply(this,arguments)
+this._dom=(0,o.getDOM)(this)
+this._wormholeHeadNode=this._dom.createTextNode("")
+this._wormholeTailNode=this._dom.createTextNode("")
+this._didInsert=!1},willRender:function(){var e=this
+this._super.apply(this,arguments)
+if(!this._didInsert){this._didInsert=!0
+a.schedule("afterRender",(function(){if(!e.isDestroyed){e._element=e._wormholeHeadNode.parentNode
+if(!e._element)throw new Error("The head node of a wormhole must be attached to the DOM")
+e._appendToDestination()}}))}},willDestroyElement:function(){var e=this
+this._super.apply(this,arguments)
+this._didInsert=!1
+var t=this._wormholeHeadNode,o=this._wormholeTailNode
+a.schedule("render",(function(){e._removeRange(t,o)}))},_destinationDidChange:r("destinationElement",(function(){this.get("destinationElement")!==this._wormholeHeadNode.parentNode&&a.schedule("render",this,"_appendToDestination")})),_appendToDestination:function(){var e=this.get("destinationElement")
+if(!e){var t=this.get("destinationElementId")
+if(t)throw new Error("ember-wormhole failed to render into '#"+t+"' because the element is not in the DOM")
+throw new Error("ember-wormhole failed to render content because the destinationElementId was set to an undefined or falsy value.")}var n=(0,o.getActiveElement)()
+this._appendRange(e,this._wormholeHeadNode,this._wormholeTailNode)
+var i=(0,o.getActiveElement)()
+n&&i!==n&&n.focus()},_appendRange:function(e,t,o){for(;t;){e.insertBefore(t,null)
+t=t!==o?o.parentNode.firstChild:null}},_removeRange:function(e,t){var o=t
+do{var n=o.previousSibling
+if(o.parentNode){o.parentNode.removeChild(o)
+if(o===e)break}o=n}while(o)}})}))
+define("ember-wormhole/templates/components/ember-wormhole",["exports"],(function(e){"use strict"
+e.__esModule=!0
+e.default=Ember.HTMLBars.template({id:"kfOuAXbY",block:'{"statements":[[1,[33,["unbound"],[[28,["_wormholeHeadNode"]]],null],false],[18,"default"],[1,[33,["unbound"],[[28,["_wormholeTailNode"]]],null],false]],"locals":[],"named":[],"yields":["default"],"hasPartials":false}',meta:{moduleName:"ember-wormhole/templates/components/ember-wormhole.hbs"}})}))
+define("ember-wormhole/utils/dom",["exports"],(function(e){"use strict"
+function t(){return"undefined"==typeof document?null:document.activeElement}function o(e){for(var t=[],o=e.firstChild;o;){t.push(o)
+o=o.nextSibling}return t}function n(e,t){if(e.getElementById)return e.getElementById(t)
+for(var n=o(e),i=void 0;n.length;){i=n.shift()
+if(i.getAttribute&&i.getAttribute("id")===t)return i
+n=o(i).concat(n)}}function i(e){var t=e.renderer
+if(!t._dom){var o=r?r(e):e.container,n=o.lookup("service:-document")
+if(n)return n
+t=o.lookup("renderer:-dom")}if(t._dom&&t._dom.document)return t._dom.document
+throw new Error("ember-wormhole could not get DOM")}Object.defineProperty(e,"__esModule",{value:!0})
+e.getActiveElement=t
+e.findElementById=n
+e.getDOM=i
+var r=Ember.getOwner}))
+
+//# sourceMappingURL=engine-vendor.map

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>Vidéostars</title>
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport'
+    />
+    <link rel="shortcut icon" type="image/x-icon" href="../public/favicon/favicon.ico" />
+    <link href="../public/compassdoc/stylesheets/screen.css" rel="stylesheet" />
+
+    <link href="https://fonts.googleapis.com/css?family=Barlow+Semi+Condensed" rel="stylesheet">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+
+    <script src="//cdn.jsdelivr.net/npm/afterglowplayer@1.x"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+        crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ"
+        crossorigin="anonymous">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.6/umd/popper.min.js"></script>
+
+    <script defer src="https://use.fontawesome.com/releases/v5.0.1/js/all.js"></script>
+
+</head>
+
+<body class="bodyDetails">
+    <div class="filterDetailsFilms">
+        <div class="filterDetails">
+            <div class="container">
+                <div class="row">
+                    <%resultat1.forEach(function(film){%>
+                        <div class="col-md-12 ">
+                            <div class="row">
+                                <div class="espaceModi col-md-12">
+                                    <a href="/users-home">Accueil</a>
+                                    <a href="/home">Films</a>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 bigdetails">
+
+                                <span class="titleFilmDetails col-md-8">
+
+                                    <div class="alldetailsFilms col-md-8">
+
+                                        <span>
+                                            <%=film.films%>
+                                        </span>
+
+                                        <div class="details">
+
+                                            <span class="hourFilmDetails">
+                                                <%=film.hourfilm%> MIN
+                                            </span>
+
+                                            <span>
+                                                <%=film.genre%>
+                                            </span>
+
+                                            <span>
+                                                <%=film.years%>
+                                            </span>
+
+                                        </div>
+
+                                        <span class="biographyFilmDetails">
+                                            <%=film.biographyfilm%>
+                                        </span>
+
+
+                                    </div>
+                                    <div class="allButtons col-md-12">
+                                        <button class="btnFilms playOpenMovie">
+                                            <i class="fas fa-play"></i>Play</button>
+
+                                        <form action="/addFavo/<%=film.id%>" method="POST">
+                                            <input type="hidden" name="_method" value="put">
+                                            <button class="btnFilms" type="submit">
+                                                <i class="fas fa-plus"></i>Ajouter aux favoris</button>
+                                        </form>
+
+
+                                        <button class="btnFilms CommentsBtn">
+                                            <i class="fas fa-comment"></i>Commentez</button>
+
+
+                                        <form action="/likeFilm" method="POST">
+                                            <input type="hidden" name="_method" value="put">
+                                            <button type="submit" class="btnFilms">
+                                                <i class="fas fa-thumbs-up"></i>Aimez
+                                            </button>
+                                        </form>
+                                    </div>
+
+                                </span>
+
+                                <div class="col-md-6 filmmmms">
+                                    <img src="../public/imgUpload/upl_<%=film.imagefilm%>" alt="filmsimage">
+                                </div>
+
+                            </div>
+
+                            <div class="playVideoFilm">
+                                <button class="closeVideo">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                                <video class="afterglow" id="myvideo" controls preload="auto" style="height:90%;width:90%" poster="../public/imgUpload/upl_<%=film.imagefilm%>">
+                                    <source type="video/mp4" src="../public/videoUpload/upl_<%=film.videofilm%>" />
+                                </video>
+                            </div>
+
+                        </div>
+                </div>
+            </div>
+
+            <div class="commentTabs">
+                <div class="allCommentsBox">
+                    <button class="closeComms">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <%infosuser.forEach(function(user){%>
+                        <div class="headBoxComments">
+                            <form action="/detailsFilm/<%=film.id%>" method="POST">
+                                <div class="form-group col-12 sendReponse">
+                                    <span class="imgSendUser">
+                                        <img src="../public/imgUpload/upl_<%=user.hasavatarUser%>" alt="avatar">
+                                    </span>
+                                    <textarea class="form-control col-8" id="exampleTextarea" rows="1" placeholder="laissez un message..." name="commentairesUsersHomeFilms"></textarea>
+                                    <button disabled type="submit" class="sendBtn btn">Envoyer</button>
+                                </div>
+                            </form>
+                        </div>
+                        <%})%>
+                            <div class="CommentsUsers col-md-12">
+                                <div class="realCommentInfos">
+                                    <%AllComments.forEach(function(comms){%>
+                                        <div class="AllNamesReal">
+                                            <span class="avatarReal">
+                                                <img src="../public/imgUpload/upl_<%=comms.hasavatarUser%>" alt="avatar">
+                                            </span>
+                                            <span style="font-weight:bolder;display:flex;flex-direction:column;">
+                                                <span>
+                                                    <%=comms.firstname%>
+                                                </span>
+                                                <span style="font-weight:normal;color:#DFDFDF">
+                                                    <%=comms.datecomments%>
+                                                </span>
+                                                <span class="elMessgeUser">
+                                                    <%=comms.commentaires%>
+                                                </span>
+                                            </span>
+                                        </div>
+                                        <%})%>
+                                </div>
+                            </div>
+                </div>
+            </div>
+
+        </div>
+        <%})%>
+
+    </div>
+
+    <script>
+        $('.playOpenMovie').click(function () {
+            $('.playVideoFilm').addClass('openVid');
+        })
+        $('.closeVideo').click(function () {
+            $('.playVideoFilm').removeClass('openVid');
+            $('video')[0].load();
+        })
+        $('.CommentsBtn').click(function () {
+            $('.commentTabs').css({
+                'display': 'flex'
+            });
+        })
+        $('.closeComms').click(function () {
+            $('.commentTabs').css({
+                'display': 'none'
+            });
+        })
+        $('textarea').keyup(function () {
+            if ($('textarea').val() == '') {
+                $('.sendBtn').attr('disabled', true);
+            } else {
+                $('.sendBtn').attr('disabled', false);
+            }
+        })
+    </script>
+
+</body>
+
+</html>
